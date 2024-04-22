@@ -38,7 +38,20 @@
   <PropertyGroup>
     <ApplicationIcon>PalWorldMoverIcon.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugV2|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\DebugV2\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CopiEx">
+      <HintPath>..\..\CopiEx\bin\Debug\net8.0\CopiEx.dll</HintPath>
+    </Reference>
     <Reference Include="CustomMarshalers" />
     <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.5.0, Culture=neutral, PublicKeyToken=8985beaab7ea3f04, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft-WindowsAPICodePack-Core.1.1.5\lib\net48\Microsoft.WindowsAPICodePack.dll</HintPath>
@@ -65,7 +78,14 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomControls\FrmCreateSave.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CustomControls\FrmCreateSave.Designer.cs">
+      <DependentUpon>FrmCreateSave.cs</DependentUpon>
+    </Compile>
     <Compile Include="CustomControls\InputDialog.cs" />
+    <Compile Include="DataControl\Data.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -79,6 +99,27 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="SGM2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SGM2.Designer.cs">
+      <DependentUpon>SGM2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SGM21.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SGM2.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="CustomControls\FrmCreateSave.resx">
+      <Generator>ResXFileCodeGeneratorEx</Generator>
+      <LastGenOutput>FrmCreateSave1.Designer.cs</LastGenOutput>
+      <DependentUpon>FrmCreateSave.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <Generator>ResXFileCodeGeneratorEx</Generator>
       <LastGenOutput>Form11.Designer.cs</LastGenOutput>
@@ -94,6 +135,11 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="SGM2.resx">
+      <Generator>ResXFileCodeGeneratorEx</Generator>
+      <LastGenOutput>SGM21.Designer.cs</LastGenOutput>
+      <DependentUpon>SGM2.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -107,10 +153,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\DataSources\PalSaveMoverData.UserData.datasource" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Resources\PalHoch1000x1500.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="PalWorldMoverIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
