@@ -7,7 +7,7 @@
     <ProjectGuid>{BF2558B3-D30C-461B-8C47-F8BA30548CD2}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>SaveGameMover</RootNamespace>
-    <AssemblyName>SaveGameMoverUI</AssemblyName>
+    <AssemblyName>8</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -49,8 +49,9 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CopiEx">
-      <HintPath>..\..\CopiEx\bin\Debug\net8.0\CopiEx.dll</HintPath>
+    <Reference Include="CopiEx, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\DebugV2\ref\CopiEx.dll</HintPath>
     </Reference>
     <Reference Include="CustomMarshalers" />
     <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.5.0, Culture=neutral, PublicKeyToken=8985beaab7ea3f04, processorArchitecture=MSIL">
@@ -110,11 +111,6 @@
     <Compile Include="SGM2.Designer.cs">
       <DependentUpon>SGM2.cs</DependentUpon>
     </Compile>
-    <Compile Include="SGM21.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>SGM2.resx</DependentUpon>
-    </Compile>
     <EmbeddedResource Include="CustomControls\FrmCreateSave.resx">
       <Generator>ResXFileCodeGeneratorEx</Generator>
       <LastGenOutput>FrmCreateSave1.Designer.cs</LastGenOutput>
@@ -161,6 +157,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="PalWorldMoverIcon.ico" />
+    <None Include="ref\CopiEx.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />

@@ -83,7 +83,12 @@ namespace SaveGameMover.DataControl
             GUID = GenerateGUID();
         }
 
-        private string GenerateGUID()
+		public override string ToString()
+		{
+            return Name;
+		}
+
+		private string GenerateGUID()
         {
             return Guid.NewGuid().ToString();
         }
