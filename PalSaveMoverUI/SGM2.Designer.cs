@@ -38,8 +38,8 @@
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.lblCurrentDirection = new System.Windows.Forms.Label();
 			this.panel3 = new System.Windows.Forms.Panel();
+			this.pbCurrentFileIndex = new SaveGameMover.CustomControls.CustomProgressBar();
 			this.btnSwitch = new System.Windows.Forms.Button();
-			this.pbCurrentFileIndex = new System.Windows.Forms.ProgressBar();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.panel1.SuspendLayout();
 			this.panel2.SuspendLayout();
@@ -122,6 +122,7 @@
 			this.tvFiles.Name = "tvFiles";
 			this.tvFiles.Size = new System.Drawing.Size(519, 342);
 			this.tvFiles.TabIndex = 1;
+			this.tvFiles.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.TvFiles_AfterCheck);
 			// 
 			// btnCopy
 			// 
@@ -167,6 +168,15 @@
 			this.panel3.Size = new System.Drawing.Size(403, 35);
 			this.panel3.TabIndex = 5;
 			// 
+			// pbCurrentFileIndex
+			// 
+			this.pbCurrentFileIndex.CustomText = null;
+			this.pbCurrentFileIndex.DisplayStyle = SaveGameMover.CustomControls.ProgressBarDisplayText.Percentage;
+			this.pbCurrentFileIndex.Location = new System.Drawing.Point(139, 0);
+			this.pbCurrentFileIndex.Name = "pbCurrentFileIndex";
+			this.pbCurrentFileIndex.Size = new System.Drawing.Size(264, 32);
+			this.pbCurrentFileIndex.TabIndex = 5;
+			// 
 			// btnSwitch
 			// 
 			this.btnSwitch.Enabled = false;
@@ -176,13 +186,6 @@
 			this.btnSwitch.TabIndex = 4;
 			this.btnSwitch.Text = "Switch Save Direction";
 			this.btnSwitch.UseVisualStyleBackColor = true;
-			// 
-			// pbCurrentFileIndex
-			// 
-			this.pbCurrentFileIndex.Location = new System.Drawing.Point(139, 3);
-			this.pbCurrentFileIndex.Name = "pbCurrentFileIndex";
-			this.pbCurrentFileIndex.Size = new System.Drawing.Size(261, 29);
-			this.pbCurrentFileIndex.TabIndex = 5;
 			// 
 			// SGM2
 			// 
@@ -215,7 +218,7 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label lblCurrentDirection;
 		private System.Windows.Forms.Panel panel3;
-		private System.Windows.Forms.ProgressBar pbCurrentFileIndex;
 		private System.Windows.Forms.Button btnSwitch;
+		private CustomControls.CustomProgressBar pbCurrentFileIndex;
 	}
 }

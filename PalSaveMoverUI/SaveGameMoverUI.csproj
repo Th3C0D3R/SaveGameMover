@@ -82,6 +82,12 @@
       <DependentUpon>FrmCreateSave.cs</DependentUpon>
     </Compile>
     <Compile Include="CustomControls\InputDialog.cs" />
+    <Compile Include="CustomControls\ProgressBarEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CustomControls\TransparentLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="DataControl\Data.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

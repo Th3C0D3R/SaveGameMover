@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections;
+using System.ComponentModel;
 using System.IO;
 using System.Security.Cryptography;
 
-internal static class CopiExHelpers
+public static class CopiExHelpers
 {
 
     public static bool AreFilesEqual(string filePath1, string filePath2)
@@ -50,14 +51,23 @@ internal static class CopiExHelpers
             }
         }
     }
+	
+    public static string GetDescription(this Enum e)
+	{
+		var descriptionAttribute = e.GetType().GetMember(e.ToString())[0]
+			.GetCustomAttributes(typeof(DescriptionAttribute), inherit: false)[0]
+			as DescriptionAttribute;
 
-    /// <summary>
-    /// Compares the checksum of the source file with the destination file.
-    /// </summary>
-    /// <param name="sourceFile">The path of the source file.</param>
-    /// <param name="destinationFile">The path of the destination file.</param>
-    /// <returns>True if the checksums match, otherwise false.</returns>
-    public static bool CompareChecksum(string sourceFile, string destinationFile)
+		return descriptionAttribute.Description;
+	}
+
+	/// <summary>
+	/// Compares the checksum of the source file with the destination file.
+	/// </summary>
+	/// <param name="sourceFile">The path of the source file.</param>
+	/// <param name="destinationFile">The path of the destination file.</param>
+	/// <returns>True if the checksums match, otherwise false.</returns>
+	public static bool CompareChecksum(string sourceFile, string destinationFile)
     {
         var sourceChecksum = CalculateChecksum(sourceFile);
         var destinationChecksum = CalculateChecksum(destinationFile);

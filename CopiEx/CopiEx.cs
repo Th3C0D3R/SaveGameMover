@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 
@@ -76,7 +78,7 @@ namespace CopiEx
 				FileInfo[] sourceFiles = _source.GetFiles("*.*", SearchOption.AllDirectories);
 				TotalFiles = sourceFiles.Length;
 
-				foreach (FileInfo sourceFile in sourceFiles)
+				Parallel.ForEach(sourceFiles, sourceFile =>
 				{
 					CurrentFileIndex++;
 					// Get the corresponding file in the destination directory
@@ -99,9 +101,11 @@ namespace CopiEx
 					{
 						differentFiles.Add(new KeyValuePair<string, DiffReason>(relativePath, DiffReason.ChecksumDif));
 					}
-				}
+				});
 			});
 			await task;
+
+			differentFiles = differentFiles.OrderBy(kv => kv.Key).ToList();
 
 			CurrentFileIndex = TotalFiles;
 
@@ -173,11 +177,19 @@ namespace CopiEx
 
 		}
 
+		[Flags]
 		public enum DiffReason
 		{
+			[Description("does not exists")]
 			DestFileNotExists,
+
+			[Description("Last Written")]
 			LastWrittenDif,
+
+			[Description("Length")]
 			LengthDif,
+
+			[Description("Content")]
 			ChecksumDif
 		}
 	}

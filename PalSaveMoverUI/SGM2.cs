@@ -10,6 +10,7 @@ using CopyEX = CopiEx.CopiEx;
 using static SaveGameMoverUI.CustomControls.Prompt;
 using System.Threading.Tasks;
 using static CopiEx.CopiEx;
+using System.Drawing;
 
 
 namespace SaveGameMover
@@ -29,6 +30,7 @@ namespace SaveGameMover
 			btnCopy.Enabled = false;
 			btnLoadSave.Enabled = false;
 			btnSwitch.Enabled = false;
+			pbCurrentFileIndex.DisplayStyle = ProgressBarDisplayText.CustomText;
 		}
 
 		private void SGM2_Load(object sender, EventArgs e)
@@ -102,7 +104,7 @@ namespace SaveGameMover
 					currentSaveData = data;
 					copiEx = new(currentSaveData.SourcePath, currentSaveData.DestinationPath);
 					btnLoadSave.Enabled = true;
-					BtnLoadSave_Click(sender, e);
+					//BtnLoadSave_Click(sender, e);
 				}
 			}
 		}
@@ -110,11 +112,14 @@ namespace SaveGameMover
 		{
 			if (currentSaveData != default(SaveData))
 			{
+				btnLoadSave.Enabled = false;
 				tvFiles.Nodes.Clear();
 				copiEx.CurrentFileIndexChanged += CopiEx_CurrentFileIndexChanged;
 				DiffList = await copiEx.CompareFiles();
                 pbCurrentFileIndex.Value = 0;
-                tvFiles.Nodes.Add(await GetTreeNodes());
+				
+				tvFiles.Nodes.Add(await GetTreeNodes());
+				btnLoadSave.Enabled = true;
 			}
 		}
 
@@ -122,7 +127,8 @@ namespace SaveGameMover
         {
             pbCurrentFileIndex.Invoke(() => pbCurrentFileIndex.Maximum = copiEx.TotalFiles);
             pbCurrentFileIndex.Invoke(() => pbCurrentFileIndex.Value = e);
-        }
+			pbCurrentFileIndex.Invoke(() => pbCurrentFileIndex.CustomText = $"Comparing Files: {e}/{copiEx.TotalFiles}");
+		}
 
 		private async Task<TreeNode> GetTreeNodes()
 		{
@@ -144,29 +150,53 @@ namespace SaveGameMover
                 PopulateTreeNodesDir(directory, rootNode);
 			});
 			await t;
+			pbCurrentFileIndex.Invoke(() =>
+			{
+				pbCurrentFileIndex.Value = 0;
+				pbCurrentFileIndex.Maximum = 0;
+				pbCurrentFileIndex.CustomText = $"Idle";
+			});
 			return rootNode;
 		}
 		private void PopulateTreeNodesDir(DirectoryInfo directory, TreeNode rootNode)
 		{
 			var dirs = directory.GetDirectories().ToList().OrderBy(dir => dir.FullName);
-            pbCurrentFileIndex.Invoke(() => pbCurrentFileIndex.Maximum += dirs.Count());
+			var files = directory.GetFiles().ToList().OrderBy(f => f.FullName);
+
+			pbCurrentFileIndex.Invoke(() => pbCurrentFileIndex.CustomText = $"Loading Tree: {pbCurrentFileIndex.Value}/{pbCurrentFileIndex.Maximum}");
+
+			pbCurrentFileIndex.Invoke(() => pbCurrentFileIndex.Maximum += dirs.Count());
             foreach (var dir in dirs)
 			{
 				TreeNode node = new(dir.Name)
 				{
 					Tag = dir.FullName
 				};
+
+				if(DiffList.FindIndex(kv => kv.Key.Contains(dir.FullName.Substring(currentSaveData.SourcePath.Length + 1))) >= 0)
+				{
+					node.BackColor = Color.IndianRed;
+				}
+
 				PopulateTreeNodesDir(dir, node);
                 pbCurrentFileIndex.Invoke(() => pbCurrentFileIndex.Value += 1);
                 rootNode.Nodes.Add(node);
 			}
 
-			foreach (var file in directory.GetFiles())
+			pbCurrentFileIndex.Invoke(() => pbCurrentFileIndex.Maximum += files.Count());
+			foreach (var file in files)
 			{
-				TreeNode node = new(file.Name)
+				var idx = DiffList.FindIndex(kv => kv.Key == file.FullName.Substring(currentSaveData.SourcePath.Length + 1));
+				TreeNode node = new(file.Name + $" - ({DiffList[idx].Value.GetDescription()})")
 				{
 					Tag = file.FullName
 				};
+
+				if(idx >= 0)
+				{
+					node.BackColor = Color.IndianRed;
+				}
+
                 pbCurrentFileIndex.Invoke(() => pbCurrentFileIndex.Value += 1);
                 rootNode.Nodes.Add(node);
 			}
@@ -179,6 +209,17 @@ namespace SaveGameMover
 				btnLoadSave.Enabled = true;
 				cbSave.Items.Clear();
 				cbSave.Items.AddRange([.. sdm.SaveData]);
+			}
+		}
+
+		private void TvFiles_AfterCheck(object sender, TreeViewEventArgs e)
+		{
+			if(e.Node.Nodes.Count > 0)
+			{
+				foreach(TreeNode node in e.Node.Nodes)
+				{
+					node.Checked = e.Node.Checked;
+				}
 			}
 		}
 	}
