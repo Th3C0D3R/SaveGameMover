@@ -7,11 +7,12 @@
     <ProjectGuid>{BF2558B3-D30C-461B-8C47-F8BA30548CD2}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>SaveGameMover</RootNamespace>
-    <AssemblyName>8</AssemblyName>
+    <AssemblyName>SaveGameMover</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -41,18 +42,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugV2|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\DebugV2\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;DEBUGV2</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CopiEx, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\DebugV2\ref\CopiEx.dll</HintPath>
-    </Reference>
     <Reference Include="CustomMarshalers" />
     <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.5.0, Culture=neutral, PublicKeyToken=8985beaab7ea3f04, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft-WindowsAPICodePack-Core.1.1.5\lib\net48\Microsoft.WindowsAPICodePack.dll</HintPath>
@@ -142,6 +138,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CopiEx\CopiEx.csproj">
+      <Project>{6a474796-d42f-41c6-8969-ba0e9d3d4a5f}</Project>
+      <Name>CopiEx</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PalSaveMoverData\SaveGameMoverData.csproj">
       <Project>{f1f6e0db-62a6-434f-a3df-791fde08c2dc}</Project>
       <Name>SaveGameMoverData</Name>
@@ -157,9 +157,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="PalWorldMoverIcon.ico" />
-    <None Include="ref\CopiEx.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />

@@ -4,8 +4,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.9.34518.117
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveGameMoverUI", "PalSaveMoverUI\SaveGameMoverUI.csproj", "{BF2558B3-D30C-461B-8C47-F8BA30548CD2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6A474796-D42F-41C6-8969-BA0E9D3D4A5F} = {6A474796-D42F-41C6-8969-BA0E9D3D4A5F}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveGameMoverData", "PalSaveMoverData\SaveGameMoverData.csproj", "{F1F6E0DB-62A6-434F-A3DF-791FDE08C2DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CopiEx", "CopiEx\CopiEx.csproj", "{6A474796-D42F-41C6-8969-BA0E9D3D4A5F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +46,18 @@ Global
 		{F1F6E0DB-62A6-434F-A3DF-791FDE08C2DC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F1F6E0DB-62A6-434F-A3DF-791FDE08C2DC}.Release|x64.ActiveCfg = Release|Any CPU
 		{F1F6E0DB-62A6-434F-A3DF-791FDE08C2DC}.Release|x64.Build.0 = Release|Any CPU
+		{6A474796-D42F-41C6-8969-BA0E9D3D4A5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A474796-D42F-41C6-8969-BA0E9D3D4A5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A474796-D42F-41C6-8969-BA0E9D3D4A5F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6A474796-D42F-41C6-8969-BA0E9D3D4A5F}.Debug|x64.Build.0 = Debug|Any CPU
+		{6A474796-D42F-41C6-8969-BA0E9D3D4A5F}.DebugV2|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A474796-D42F-41C6-8969-BA0E9D3D4A5F}.DebugV2|Any CPU.Build.0 = Debug|Any CPU
+		{6A474796-D42F-41C6-8969-BA0E9D3D4A5F}.DebugV2|x64.ActiveCfg = Debug|Any CPU
+		{6A474796-D42F-41C6-8969-BA0E9D3D4A5F}.DebugV2|x64.Build.0 = Debug|Any CPU
+		{6A474796-D42F-41C6-8969-BA0E9D3D4A5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A474796-D42F-41C6-8969-BA0E9D3D4A5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A474796-D42F-41C6-8969-BA0E9D3D4A5F}.Release|x64.ActiveCfg = Release|Any CPU
+		{6A474796-D42F-41C6-8969-BA0E9D3D4A5F}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

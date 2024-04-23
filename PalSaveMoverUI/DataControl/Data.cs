@@ -6,151 +6,145 @@ using System.Text;
 
 namespace SaveGameMover.DataControl
 {
-    public class SaveDataManager
-    {
-        public readonly List<SaveData> SaveData;
+	public class SaveDataManager
+	{
+		public readonly List<SaveData> SaveData;
 
-        public SaveDataManager()
-        {
-            SaveData = new List<SaveData>();
-        }
+		public SaveDataManager()
+		{
+			SaveData = [];
+		}
 
-        public void AddSaveData(string sourcePath, string destinationPath, string name)
-        {
-            SaveData saveData = new SaveData(sourcePath, destinationPath, name);
-            SaveData.Add(saveData);
-        }
+		public void AddSaveData(string sourcePath, string destinationPath, string name)
+		{
+			SaveData saveData = new(sourcePath, destinationPath, name);
+			SaveData.Add(saveData);
+		}
 
-        public void SaveAllToFile(string password)
-        {
-            using (StreamWriter writer = new StreamWriter("data.dat"))
-            {
-                foreach (SaveData saveData in SaveData)
-                {
-                    string encryptedData = saveData.EncryptData(password);
-                    writer.WriteLine(encryptedData);
-                }
-            }
-        }
+		public void SaveAllToFile(string password)
+		{
+			using StreamWriter writer = new("data.dat");
+			foreach (SaveData saveData in SaveData)
+			{
+				string encryptedData = saveData.EncryptData(password);
+				writer.WriteLine(encryptedData);
+			}
+		}
 
-        public void ReadAllFromFile(string password)
-        {
-            SaveData.Clear();
+		public void ReadAllFromFile(string password)
+		{
+			SaveData.Clear();
 
-            using (StreamReader reader = new StreamReader("data.dat"))
-            {
-                string encryptedData;
-                while ((encryptedData = reader.ReadLine()) != null)
-                {
-                    string decryptedData = DataControl.SaveData.DecryptData(encryptedData, password);
-                    string[] dataParts = decryptedData.Split('|');
+			using StreamReader reader = new("data.dat");
+			string encryptedData;
+			while ((encryptedData = reader.ReadLine()) != null)
+			{
+				string decryptedData = DataControl.SaveData.DecryptData(encryptedData, password);
+				string[] dataParts = decryptedData.Split('|');
 
-                    if (dataParts.Length == 4)
-                    {
-                        string sourcePath = dataParts[0];
-                        string destinationPath = dataParts[1];
-                        string name = dataParts[2];
-                        string guid = dataParts[3];
+				if (dataParts.Length == 4)
+				{
+					string sourcePath = dataParts[0];
+					string destinationPath = dataParts[1];
+					string name = dataParts[2];
+					string guid = dataParts[3];
 
-                        SaveData saveData = new SaveData(sourcePath, destinationPath, name)
-                        {
-                            GUID = guid
-                        };
+					SaveData saveData = new(sourcePath, destinationPath, name)
+					{
+						GUID = guid
+					};
 
-                        SaveData.Add(saveData);
-                    }
-                }
-            }
-        }
-        public bool IsFirstRun()
-        {
-            return !File.Exists("data.dat");
-        }   
-    }
+					SaveData.Add(saveData);
+				}
+			}
+		}
+		public bool IsFirstRun()
+		{
+			return !File.Exists("data.dat");
+		}
+	}
 
-    public class SaveData
-    {
-        public string SourcePath { get; set; }
-        public string DestinationPath { get; set; }
-        public string Name { get; set; }
-        public string GUID { get; set; }
+	public class SaveData
+	{
+		public string SourcePath { get; set; }
+		public string DestinationPath { get; set; }
+		public string Name { get; set; }
+		public string GUID { get; set; } = "-1";
 
-        public SaveData(string sourcePath, string destinationPath, string name)
-        {
-            SourcePath = sourcePath;
-            DestinationPath = destinationPath;
-            Name = name;
-            GUID = GenerateGUID();
-        }
+		public SaveData(string sourcePath, string destinationPath, string name)
+		{
+			SourcePath = sourcePath;
+			DestinationPath = destinationPath;
+			Name = name;
+			GUID = GenerateGUID();
+		}
 
 		public override string ToString()
 		{
-            return Name;
+			return Name;
 		}
 
 		private string GenerateGUID()
-        {
-            return Guid.NewGuid().ToString();
-        }
+		{
+			return Guid.NewGuid().ToString();
+		}
 
-        public string EncryptData(string password)
-        {
-            byte[] dataBytes = Encoding.UTF8.GetBytes(SourcePath + "|" + DestinationPath + "|" + Name + "|" + GUID);
-            byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+		public string EncryptData(string password)
+		{
+			string plainText = SourcePath + "|" + DestinationPath + "|" + Name + "|" + GUID;
+			byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+			byte[] salt = new byte[16];
 
-            using (Aes aes = Aes.Create())
-            {
-                aes.Key = passwordBytes;
-                aes.Mode = CipherMode.CBC;
-                aes.Padding = PaddingMode.PKCS7;
+			using Rfc2898DeriveBytes derivedBytes = new(passwordBytes, salt, 10000);
+			byte[] key = derivedBytes.GetBytes(32);
+			byte[] iv = derivedBytes.GetBytes(16);
 
-                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+			using Aes aes = Aes.Create();
+			aes.Key = key;
+			aes.IV = iv;
+			aes.Mode = CipherMode.CBC;
+			aes.Padding = PaddingMode.PKCS7;
 
-                using (MemoryStream memoryStream = new MemoryStream())
-                {
-                    memoryStream.Write(aes.IV, 0, aes.IV.Length);
+			// Create an encryptor to perform the stream transform
+			ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
-                    using (CryptoStream cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
-                    {
-                        cryptoStream.Write(dataBytes, 0, dataBytes.Length);
-                        cryptoStream.FlushFinalBlock();
-                    }
+			// Create the streams used for encryption
+			using MemoryStream msEncrypt = new();
+			using (CryptoStream csEncrypt = new(msEncrypt, encryptor, CryptoStreamMode.Write))
+			{
+				using StreamWriter swEncrypt = new(csEncrypt);
+				// Write all data to the stream
+				swEncrypt.Write(plainText);
+			}
+			return Convert.ToBase64String(msEncrypt.ToArray());
+		}
 
-                    byte[] encryptedBytes = memoryStream.ToArray();
-                    return Convert.ToBase64String(encryptedBytes);
-                }
-            }
-        }
+		public static string DecryptData(string encryptedData, string password)
+		{
+			byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+			byte[] salt = new byte[16]; // Generate a random salt
 
-        public static string DecryptData(string encryptedData, string password)
-        {
-            byte[] encryptedBytes = Convert.FromBase64String(encryptedData);
-            byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+			using Rfc2898DeriveBytes derivedBytes = new(passwordBytes, salt, 10000);
+			byte[] key = derivedBytes.GetBytes(32); // AES 256-bit key
+			byte[] iv = derivedBytes.GetBytes(16); // 128-bit IV
 
-            using (Aes aes = Aes.Create())
-            {
-                byte[] iv = new byte[aes.BlockSize / 8];
-                Array.Copy(encryptedBytes, 0, iv, 0, iv.Length);
+			using Aes aes = Aes.Create();
+			aes.Key = key;
+			aes.IV = iv;
+			aes.Mode = CipherMode.CBC;
+			aes.Padding = PaddingMode.PKCS7;
 
-                aes.Key = passwordBytes;
-                aes.IV = iv;
-                aes.Mode = CipherMode.CBC;
-                aes.Padding = PaddingMode.PKCS7;
+			// Create a decryptor to perform the stream transform
+			ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
-                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-
-                using (MemoryStream memoryStream = new MemoryStream())
-                {
-                    using (CryptoStream cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Write))
-                    {
-                        cryptoStream.Write(encryptedBytes, iv.Length, encryptedBytes.Length - iv.Length);
-                        cryptoStream.FlushFinalBlock();
-                    }
-
-                    byte[] decryptedBytes = memoryStream.ToArray();
-                    return Encoding.UTF8.GetString(decryptedBytes);
-                }
-            }
-        }
-    }
+			// Create the streams used for decryption
+			using MemoryStream msDecrypt = new(Convert.FromBase64String(encryptedData));
+			using CryptoStream csDecrypt = new(msDecrypt, decryptor, CryptoStreamMode.Read);
+			using StreamReader srDecrypt = new(csDecrypt);
+			// Read the decrypted bytes from the decrypting stream
+			// and place them in a string
+			return srDecrypt.ReadToEnd();
+		}
+	}
 }
+
