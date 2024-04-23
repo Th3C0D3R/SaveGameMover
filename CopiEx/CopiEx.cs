@@ -95,7 +95,7 @@ namespace CopiEx
 					{
 						differentFiles.Add(new KeyValuePair<string, DiffReason>(relativePath, DiffReason.LengthDif));
 					}
-					else if (!CompareChecksum(sourceFile.FullName, destinationFile.FullName))
+					else if (!CopiExHelpers.AreFilesEqual(sourceFile.FullName, destinationFile.FullName))
 					{
 						differentFiles.Add(new KeyValuePair<string, DiffReason>(relativePath, DiffReason.ChecksumDif));
 					}
@@ -157,33 +157,7 @@ namespace CopiEx
 			CurrentFileIndex = TotalFiles;
 		}
 
-		/// <summary>
-		/// Compares the checksum of the source file with the destination file.
-		/// </summary>
-		/// <param name="sourceFile">The path of the source file.</param>
-		/// <param name="destinationFile">The path of the destination file.</param>
-		/// <returns>True if the checksums match, otherwise false.</returns>
-		private static bool CompareChecksum(string sourceFile, string destinationFile)
-		{
-			var sourceChecksum = CalculateChecksum(sourceFile);
-			var destinationChecksum = CalculateChecksum(destinationFile);
-
-			return StructuralComparisons.StructuralEqualityComparer.Equals(sourceChecksum, destinationChecksum);
-		}
-
-		static string CalculateChecksum(string filePath)
-		{
-			using (var sha256 = SHA256.Create())
-			{
-				using (var stream = File.OpenRead(filePath))
-				{
-					byte[] hash = sha256.ComputeHash(stream);
-					return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-				}
-			}
-		}
-
-		private bool ValidatePaths()
+        private bool ValidatePaths()
 		{
 			if (!_source.Exists)
 			{

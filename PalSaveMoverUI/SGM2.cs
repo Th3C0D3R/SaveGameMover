@@ -113,14 +113,16 @@ namespace SaveGameMover
 				tvFiles.Nodes.Clear();
 				copiEx.CurrentFileIndexChanged += CopiEx_CurrentFileIndexChanged;
 				DiffList = await copiEx.CompareFiles();
-				tvFiles.Nodes.Add(await GetTreeNodes());
+                pbCurrentFileIndex.Value = 0;
+                tvFiles.Nodes.Add(await GetTreeNodes());
 			}
 		}
 
 		private void CopiEx_CurrentFileIndexChanged(object sender, int e)
-		{
-			
-		}
+        {
+            pbCurrentFileIndex.Invoke(() => pbCurrentFileIndex.Maximum = copiEx.TotalFiles);
+            pbCurrentFileIndex.Invoke(() => pbCurrentFileIndex.Value = e);
+        }
 
 		private async Task<TreeNode> GetTreeNodes()
 		{
@@ -136,8 +138,10 @@ namespace SaveGameMover
 				Tag = directory.FullName
 			};
 			Task t = Task.Factory.StartNew(() =>
-			{
-				PopulateTreeNodesDir(directory, rootNode);
+            {
+                pbCurrentFileIndex.Invoke(() => pbCurrentFileIndex.Value = 0);
+                pbCurrentFileIndex.Invoke(() => pbCurrentFileIndex.Maximum = 0);
+                PopulateTreeNodesDir(directory, rootNode);
 			});
 			await t;
 			return rootNode;
@@ -145,14 +149,16 @@ namespace SaveGameMover
 		private void PopulateTreeNodesDir(DirectoryInfo directory, TreeNode rootNode)
 		{
 			var dirs = directory.GetDirectories().ToList().OrderBy(dir => dir.FullName);
-			foreach (var dir in dirs)
+            pbCurrentFileIndex.Invoke(() => pbCurrentFileIndex.Maximum += dirs.Count());
+            foreach (var dir in dirs)
 			{
 				TreeNode node = new(dir.Name)
 				{
 					Tag = dir.FullName
 				};
 				PopulateTreeNodesDir(dir, node);
-				rootNode.Nodes.Add(node);
+                pbCurrentFileIndex.Invoke(() => pbCurrentFileIndex.Value += 1);
+                rootNode.Nodes.Add(node);
 			}
 
 			foreach (var file in directory.GetFiles())
@@ -161,7 +167,8 @@ namespace SaveGameMover
 				{
 					Tag = file.FullName
 				};
-				rootNode.Nodes.Add(node);
+                pbCurrentFileIndex.Invoke(() => pbCurrentFileIndex.Value += 1);
+                rootNode.Nodes.Add(node);
 			}
 		}
 		private void LoadSaves()
