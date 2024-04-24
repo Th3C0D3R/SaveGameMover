@@ -53,6 +53,8 @@ namespace SaveGameMover.CustomControls
         private void BtnSave_Click(object sender, EventArgs e)
         { 
             gamename = txbGamename.Text;
+            destination = txbDestination.Text;
+            source = txbSource.Text;
             DialogResult = DialogResult.OK;
             Close();
 

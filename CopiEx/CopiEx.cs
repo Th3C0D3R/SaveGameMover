@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -63,6 +64,29 @@ namespace CopiEx
 		}
 
 		/// <summary>
+		/// Copies a single file from the source directory to the destination directory.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="debug"></param>
+		/// <returns></returns>
+		public bool CopySingleFile(FileInfo source, FileInfo destination, bool debug = false)
+        {
+			if (!source.Exists) return false;
+
+            try
+            {
+				if (debug) Console.WriteLine($"Copying {source.FullName} to {destination.FullName}");
+                else File.Copy(source.FullName, destination.FullName, true);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+		/// <summary>
 		/// Compares files in the source directory with the corresponding files in the destination directory.
 		/// </summary>
 		/// <returns>A list of different files.</returns>
@@ -71,7 +95,7 @@ namespace CopiEx
 			TotalFiles = 0;
 			CurrentFileIndex = 0;
 			CurrentStep = "Comparing files...";
-			List<KeyValuePair<string, DiffReason>> differentFiles = new List<KeyValuePair<string, DiffReason>>();
+            ConcurrentBag<KeyValuePair<string, DiffReason>> differentFiles = new ConcurrentBag<KeyValuePair<string, DiffReason>>();
 			Task task = Task.Factory.StartNew(() =>
 			{
 				// Get all files in the source directory
@@ -105,11 +129,9 @@ namespace CopiEx
 			});
 			await task;
 
-			differentFiles = differentFiles.OrderBy(kv => kv.Key).ToList();
+            CurrentFileIndex = TotalFiles;
 
-			CurrentFileIndex = TotalFiles;
-
-			return differentFiles;
+            return differentFiles.OrderBy(kv => kv.Key).ToList();
 		}
 
 		/// <summary>
@@ -122,7 +144,7 @@ namespace CopiEx
 
 		private async void copyFiles()
 		{
-			List<KeyValuePair<string, DiffReason>> compareFiles = await CompareFiles();
+            List<KeyValuePair<string, DiffReason>> compareFiles = await CompareFiles();
 
 			TotalFiles = 0;
 			CurrentFileIndex = 0;
