@@ -146,5 +146,6 @@ namespace SaveGameMover.DataControl
 			return srDecrypt.ReadToEnd();
 		}
 	}
+
 }
 

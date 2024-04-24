@@ -113,17 +113,17 @@ namespace CopiEx
 					{
 						differentFiles.Add(new KeyValuePair<string, DiffReason>(relativePath, DiffReason.DestFileNotExists));
 					}
-					else if (sourceFile.LastWriteTime > destinationFile.LastWriteTime)
+					else if (!CopiExHelpers.AreFilesEqual(sourceFile.FullName, destinationFile.FullName))
 					{
-						differentFiles.Add(new KeyValuePair<string, DiffReason>(relativePath, DiffReason.LastWrittenDif));
+						differentFiles.Add(new KeyValuePair<string, DiffReason>(relativePath, DiffReason.ChecksumDif));
 					}
 					else if (sourceFile.Length != destinationFile.Length)
 					{
 						differentFiles.Add(new KeyValuePair<string, DiffReason>(relativePath, DiffReason.LengthDif));
 					}
-					else if (!CopiExHelpers.AreFilesEqual(sourceFile.FullName, destinationFile.FullName))
+					else if (sourceFile.LastWriteTime > destinationFile.LastWriteTime)
 					{
-						differentFiles.Add(new KeyValuePair<string, DiffReason>(relativePath, DiffReason.ChecksumDif));
+						differentFiles.Add(new KeyValuePair<string, DiffReason>(relativePath, DiffReason.LastWrittenDif));
 					}
 				});
 			});
